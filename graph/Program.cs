@@ -19,7 +19,7 @@ namespace graph
 {
     class GraphInterface
     {
-        Graph graph;
+        public Graph graph;
         string path;
         public GraphInterface(Graph graph, string path)
         {
@@ -456,56 +456,22 @@ namespace graph
 
         public static Graph GraphUnification(Graph graph1, Graph graph2)//объединение графов
         {
-            if (!graph1.isMultigraph && !graph2.isMultigraph)
+            foreach (var vertex in graph1.vertices)
+            {
+                if (graph2.vertices.ContainsKey(vertex.Key))
+                {
+                    return null;
+                }
+            }
+            if ((!graph1.isMultigraph && !graph2.isMultigraph) && graph1.isOriented == graph2.isOriented)
             {
                 Graph newGraph = new Graph(graph1);
                 foreach (var vertex in graph2.vertices)
                 {
-                    if (!newGraph.vertices.ContainsKey(vertex.Key))//если в новом графе есть не все вершины из двух данных
-                    {
-                        newGraph.vertices.Add(vertex.Key, new List<Edge>());//копирование вершины и её рёбер
-                        foreach (Edge edge in vertex.Value)
-                        {
-                            newGraph.vertices[vertex.Key].Add(new Edge(edge));
-                        }
-                    }
-                }
-
-                //установка оставшихся рёбер
-                foreach (var vertex in graph2.vertices)
-                {
+                    newGraph.vertices.Add(vertex.Key, new List<Edge>());//копирование вершины и её рёбер
                     foreach (Edge edge in vertex.Value)
                     {
-                        if (newGraph.vertices[vertex.Key].Find((Edge tempEdge) =>
-                                tempEdge.ConnectedVertex == edge.ConnectedVertex) == null)//если не найдено ребро, которое содержится в graph2 
-                        {
-                            newGraph.vertices[vertex.Key].Add(new Edge(edge));
-                        }
-                    }
-                }
-
-                foreach (var vertex in newGraph.vertices)//стираем все PairId
-                {
-                    foreach (Edge edge in vertex.Value)
-                    {
-                        edge.PairId = 0;
-                    }
-                }
-
-                if (!graph1.isOriented && !graph2.isOriented)//если оба графа неориентированные
-                {
-                    foreach (var vertex in newGraph.vertices)//задаём новые PairId
-                    {
-                        foreach (Edge edge in vertex.Value)
-                        {
-                            if (edge.PairId == 0 && edge.ConnectedVertex != vertex.Key)//если нет пары и при этом не петля
-                            {
-                                edge.PairId = CurrentPairId;
-                                newGraph.vertices[edge.ConnectedVertex].Find((Edge edge1) =>
-                                    edge1.ConnectedVertex == vertex.Key && edge1.PairId == 0).PairId = CurrentPairId;
-                                CurrentPairId++;
-                            }
-                        }
+                        newGraph.vertices[vertex.Key].Add(new Edge(edge));
                     }
                 }
                 return newGraph;
@@ -515,7 +481,33 @@ namespace graph
 
         public static Graph GraphConnection(Graph graph1, Graph graph2)//соединение графов
         {
-            return Graph.CompleteGraph(Graph.GraphUnification(graph1, graph2));
+            Graph newGraph = Graph.GraphUnification(graph1, graph2);
+            if (newGraph == null)
+            {
+                return null;
+            }
+            if (!newGraph.isOriented)
+            {
+                foreach (var vertex1 in graph1.vertices)
+                {
+                    foreach (var vertex2 in graph2.vertices)
+                    {
+                        newGraph.CreateEdge(vertex1.Key, vertex2.Key);
+                    }
+                }
+            }
+            else 
+            {
+                foreach (var vertex1 in graph1.vertices)
+                {
+                    foreach (var vertex2 in graph2.vertices)
+                    {
+                        newGraph.CreateEdge(vertex1.Key, vertex2.Key);
+                        newGraph.CreateEdge(vertex2.Key, vertex1.Key);
+                    }
+                }
+            }
+            return newGraph;
         }
 
         public static void ContainsIsolatedVertices(Graph graph)
@@ -614,14 +606,17 @@ namespace graph
         {
             Graph graph = new Graph("E:\\учеба\\3 курс\\графы\\graph\\graph\\input_1.txt");
             GraphInterface Igraph = new GraphInterface(graph, "E:\\учеба\\3 курс\\графы\\graph\\graph\\output.txt");
-            //Graph graph1 = new Graph("E:\\учеба\\3 курс\\графы\\graph\\graph\\input_2.txt");
+            Graph graph1 = new Graph("E:\\учеба\\3 курс\\графы\\graph\\graph\\input_2.txt");
 
-            //Graph graph2 = new Graph("E:\\учеба\\3 курс\\графы\\graph\\graph\\input_3.txt");
+            Graph graph2 = new Graph("E:\\учеба\\3 курс\\графы\\graph\\graph\\input_3.txt");
 
-            //GraphInterface Igraph = new GraphInterface(Graph.GraphConnection(graph1, graph2),
-            //"E:\\учеба\\3 курс\\графы\\graph\\graph\\output.txt");
-            //GraphInterface Igraph = new GraphInterface(Graph.GraphUnification(graph1, graph2), 
-            //"E:\\учеба\\3 курс\\графы\\graph\\graph\\output.txt");
+            GraphInterface Igraph2 = new GraphInterface(Graph.GraphConnection(graph1, graph2),//GraphUnification GraphConnection
+            "E:\\учеба\\3 курс\\графы\\graph\\graph\\output.txt");
+            if (Igraph2.graph == null)
+            {
+                Console.WriteLine("Возникли ошибки при создании объединения графов");
+            }
+            else while (Igraph2.Operation(true)) { }
             //Graph.ContainsIsolatedVertices(graph);
             //Graph.MaxDegree(graph);
             //while (Igraph.Operation(true)) { }
