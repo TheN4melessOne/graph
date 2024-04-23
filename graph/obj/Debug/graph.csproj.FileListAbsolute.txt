@@ -1,0 +1,8 @@
+E:\учеба\3 курс\графы\graph\graph\bin\Debug\graph.exe.config
+E:\учеба\3 курс\графы\graph\graph\bin\Debug\graph.exe
+E:\учеба\3 курс\графы\graph\graph\bin\Debug\graph.pdb
+E:\учеба\3 курс\графы\graph\graph\obj\Debug\graph.csproj.AssemblyReference.cache
+E:\учеба\3 курс\графы\graph\graph\obj\Debug\graph.csproj.SuggestedBindingRedirects.cache
+E:\учеба\3 курс\графы\graph\graph\obj\Debug\graph.csproj.CoreCompileInputs.cache
+E:\учеба\3 курс\графы\graph\graph\obj\Debug\graph.exe
+E:\учеба\3 курс\графы\graph\graph\obj\Debug\graph.pdb
